@@ -1,21 +1,28 @@
 //
 //  AppDelegate.swift
-//  uni_cpbl
+//  ExamFriend
 //
-//  Created by 原田摩利奈 on 2023/11/17.
+//  Created by 原田摩利奈 on 9/14/22.
 //
 
 import UIKit
+import FirebaseCore
+import FirebaseFirestore
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+      var window: UIWindow?
 
+      func application(_ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions:
+                       [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        FirebaseApp.configure()
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+          
         return true
-    }
+      }
+    
 
     // MARK: UISceneSession Lifecycle
 
@@ -33,4 +40,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
-
