@@ -8,6 +8,8 @@
 import UIKit
 import MapKit
 import CoreLocation
+import FirebaseCore
+import FirebaseFirestore
 
 class MapAnnotationSetting: MKPointAnnotation {
     // デフォルトだとピンにはタイトル・サブタイトルしかないので、設定を追加する
@@ -18,12 +20,24 @@ class MapAnnotationSetting: MKPointAnnotation {
 
 class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDelegate {
     
-    let pinImagges: [UIImage?] = [UIImage(named: "broccoli"),UIImage(named: "inu2")]
+    let firestore = Firestore.firestore()
+    var ref: DocumentReference?
+    
+    let pinImagges: [UIImage?] = [UIImage(named: "broccoli"), UIImage(named: "broccoli")]
+    var addressArray: [String] = []
     let pinTitles: [String] = ["白いい犬","茶色い犬"]
     let pinSubTiiles: [String] = ["比較的白いです","茶色いのが売りです"]
     let pinlocations: [CLLocationCoordinate2D] = [CLLocationCoordinate2DMake(35.68, 139.56),CLLocationCoordinate2DMake(35.70, 139.56)]
     
     var locationManager: CLLocationManager! // locationManagerの宣言
+    
+    var nameArray: [String] = []
+//    var addressArray: [String] = []
+    var count1Array: [String] = []
+    var count2Array: [String] = []
+    var count3Array: [String] = []
+    var cellArray: [String] = []
+    
     @IBOutlet weak var mapView: MKMapView!
     
     override func viewDidLoad() {
@@ -35,63 +49,70 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
         locationManager!.requestWhenInUseAuthorization()
         mapView.delegate = self
         
+        getResult()
+        
+
+        
+        
         
         for (index,pinTitle) in self.pinTitles.enumerated() {
-                   // カスタムで作成したMapAnnotationSettingをセット(これで画像をセットできる)
-                   let pin = MapAnnotationSetting()
-
-                   // 用意したデータをセット
-                   let coordinate = self.pinlocations[index]
-                   pin.title = pinTitle
-                   pin.subtitle = self.pinSubTiiles[index]
-                   // 画像をセットできる
-                   pin.pinImage = pinImagges[index]
-
-
-
+            // カスタムで作成したMapAnnotationSettingをセット(これで画像をセットできる)
+            let pin = MapAnnotationSetting()
+            
+            // 用意したデータをセット
+            let coordinate = self.pinlocations[index]
+            pin.title = pinTitle
+            pin.subtitle = self.pinSubTiiles[index]
+            // 画像をセットできる
+            pin.pinImage = pinImagges[index]
+            
+            
+            
             // ピンを立てる
-                   pin.coordinate = coordinate
-                   self.mapView.addAnnotation(pin)
-               }
+            pin.coordinate = coordinate
+            self.mapView.addAnnotation(pin)
+        }
+        
+        
     }
     
     // 画面に適当にボタンを配置する
     @IBAction func tap(_ sender: Any) {
-        geoCording()
+//        geoCording()
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         // タップされたピンの位置情報
-//        print(view.annotation?.coordinate)
-//        // タップされたピンのタイトルとサブタイトル
-//        print(view.annotation?.title)
-//        print(view.annotation?.subtitle)
+        //        print(view.annotation?.coordinate)
+        //        // タップされたピンのタイトルとサブタイトル
+        //        print(view.annotation?.title)
+        //        print(view.annotation?.subtitle)
         // 自分の現在地は置き換えない(青いフワフワのマークのままにする)
-               if (annotation is MKUserLocation) {
-                   return nil
-               }
-
-               let identifier = "pin"
-               var annotationView: MKAnnotationView!
-
-               if annotationView == nil {
-                   annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-               }
-
-               // ピンにセットした画像をつける
-               if let pin = annotation as? MapAnnotationSetting {
-                   if let pinImage = pin.pinImage {
-                       let resizeImage = pinImage.resized(toWidth: 10)
-                      annotationView.image = resizeImage
-                       
-                   }
-               }
-               annotationView.annotation = annotation
-               // ピンをタップした時の吹き出しの表示
-               annotationView.canShowCallout = true
-
-               return annotationView
-    
+        if (annotation is MKUserLocation) {
+            return nil
+        }
+        
+        let identifier = "pin"
+        var annotationView: MKAnnotationView!
+        
+        if annotationView == nil {
+            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+        }
+        
+        // ピンにセットした画像をつける
+        if let pin = annotation as? MapAnnotationSetting {
+            if let pinImage = pin.pinImage {
+                let resizeImage = pinImage.resized(toWidth: 20)
+                annotationView.image = resizeImage
+                
+            }
+        }
+        annotationView.annotation = annotation
+        // ピンをタップした時の吹き出しの表示
+        annotationView.canShowCallout = true
+        
+        return annotationView
+        
     }
     
     
@@ -102,34 +123,39 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
         var resultlat: CLLocationDegrees!
         var resultlng: CLLocationDegrees!
         // 住所から位置情報に変換
-        CLGeocoder().geocodeAddressString(address) { placemarks, error in
-            if let lat = placemarks?.first?.location?.coordinate.latitude {
-                // 問題なく変換できたら代入
-                print("緯度 : \(lat)")
-                resultlat = lat
-                
-            }
-            if let lng = placemarks?.first?.location?.coordinate.longitude {
-                // 問題なく変換できたら代入
-                print("経度 : \(lng)")
-                resultlng = lng
-            }
-            // 値が入ってれば
-            if (resultlng != nil && resultlat != nil) {
-                //  　　　　　　　　　  位置情報データを作成
-                let cordinate = CLLocationCoordinate2DMake(resultlat, resultlng)
-                let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                //  　　　　　　　　　  照準を合わせる
-                let region = MKCoordinateRegion(center: cordinate, span: span)
-                self.mapView.region = region
-                
-                // 同時に取得した位置にピンを立てる
-                let pin = MKPointAnnotation()
-                pin.title = "タイトル"
-                pin.subtitle = "サブタイトル"
-                
-                pin.coordinate = cordinate
-                self.mapView.addAnnotation(pin)
+        print("来てる？")
+        print(addressArray.count)
+        for (index,address) in self.addressArray.enumerated() {
+            print(index,address)
+            CLGeocoder().geocodeAddressString(address) { placemarks, error in
+                if let lat = placemarks?.first?.location?.coordinate.latitude {
+                    // 問題なく変換できたら代入
+                    print("緯度 : \(lat)")
+                    resultlat = lat
+                    
+                }
+                if let lng = placemarks?.first?.location?.coordinate.longitude {
+                    // 問題なく変換できたら代入
+                    print("経度 : \(lng)")
+                    resultlng = lng
+                }
+                // 値が入ってれば
+                if (resultlng != nil && resultlat != nil) {
+                    //  　　　　　　　　　  位置情報データを作成
+                    let cordinate = CLLocationCoordinate2DMake(resultlat, resultlng)
+                    let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                    //  　　　　　　　　　  照準を合わせる
+                    let region = MKCoordinateRegion(center: cordinate, span: span)
+                    self.mapView.region = region
+                    
+                    // 同時に取得した位置にピンを立てる
+                    let pin = MKPointAnnotation()
+                    pin.title = "title"
+                    pin.subtitle = "sub"
+                    
+                    pin.coordinate = cordinate
+                    self.mapView.addAnnotation(pin)
+                }
             }
         }
     }
@@ -151,6 +177,59 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
     @IBAction func button(){
         
     }
+    
+    func getResult() {
+        firestore.collection("store").getDocuments() { [self] (querySnapshot, error) in
+            if let error = error {
+                print("ドキュメントの取得に失敗しました:", error)
+            } else {
+                print("ドキュメントの取得に成功しました")
+                for document in querySnapshot!.documents {
+                    let storeData = document.data()["name"] as? String
+                    let addressData = document.data()["address"] as? String
+                    let count1Data = document.data()["count1"] as? Int
+                    let count2Data = document.data()["count2"] as? Int
+                    let count3Data = document.data()["count3"] as? Int
+                    let cellData = document.data()["cell"] as? String
+                    
+                    //documentIDをとってdocumentIDのgoをタップされたらtrueにしたい。それで本人に通知がいくといいなぁ。
+                    //userIDData2は仮
+                    
+                    
+//                    let userIDData = document.data()["userID"] as? String
+                    
+                    self.nameArray.append(storeData!)
+                    self.addressArray.append(addressData!)
+                    self.count1Array.append(String(count1Data!))
+                    self.count2Array.append(String(count2Data!))
+                    self.count3Array.append(String(count3Data!))
+                    self.cellArray.append(String(cellData!))
+                    
+                    
+                    //                                self.documentIDArray.append(userIDData2)
+                   
+                    print(nameArray)
+                    print(addressArray)
+                    print(count1Array)
+                    print(count2Array)
+                    print(count3Array)
+                    print(cellArray)
+
+                    print("わけわかめ")
+                    //取得したデータに対しての処理を書く
+                    
+                    //self.resultArray.append(data!)
+                    //self.resultArray.sort { $0 > $1 }
+                    //print(data)
+                    //print("\(resultArray)これ")
+                    
+                    geoCording()
+                }
+            }
+        }
+        
+    }
+    
     
     
 }
