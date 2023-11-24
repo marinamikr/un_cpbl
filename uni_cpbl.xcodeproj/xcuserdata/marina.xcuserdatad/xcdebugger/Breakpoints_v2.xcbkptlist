@@ -16,8 +16,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "130"
             endingLineNumber = "130"
-            landmarkName = "geoCording()"
-            landmarkType = "7">
+            landmarkName = "ViewController"
+            landmarkType = "3">
             <Locations>
                <Location
                   uuid = "B27C89DC-8693-4BB0-8347-828C9CA78477 - e2a55b3c9e3886ff"
@@ -79,8 +79,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "131"
             endingLineNumber = "131"
-            landmarkName = "geoCording()"
-            landmarkType = "7">
+            landmarkName = "ViewController"
+            landmarkType = "3">
             <Locations>
                <Location
                   uuid = "99B0C9D4-63D6-4A71-B281-DE3BA0CE8636 - ae3c63e5bb9e2887"
@@ -127,8 +127,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "126"
             endingLineNumber = "126"
-            landmarkName = "geoCording()"
-            landmarkType = "7">
+            landmarkName = "ViewController"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -143,8 +143,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "157"
             endingLineNumber = "157"
-            landmarkName = "geoCording()"
-            landmarkType = "7">
+            landmarkName = "ViewController"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
