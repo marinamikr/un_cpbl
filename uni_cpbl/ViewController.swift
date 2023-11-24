@@ -1,9 +1,3 @@
-//
-//  ViewController.swift
-//  uni_cpbl
-//
-//  Created by 原田摩利奈 on 2023/11/17.
-//
 
 import UIKit
 import MapKit
@@ -23,7 +17,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
     let firestore = Firestore.firestore()
     var ref: DocumentReference?
     
-    let pinImagges: [UIImage?] = [UIImage(named: "broccoli"), UIImage(named: "broccoli")]
+//    let pinImagges: [UIImage?] = [UIImage(named: "broccoli"), UIImage(named: "broccoli")]
     var addressArray: [String] = []
     let pinTitles: [String] = ["白いい犬","茶色い犬"]
     let pinSubTiiles: [String] = ["比較的白いです","茶色いのが売りです"]
@@ -47,12 +41,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
         locationManager = CLLocationManager()
         locationManager.delegate = self
         locationManager!.requestWhenInUseAuthorization()
+        
         mapView.delegate = self
         
         getResult()
-        
-        
-        
         
         
         for (index,pinTitle) in self.pinTitles.enumerated() {
@@ -64,7 +56,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
             pin.title = pinTitle
             pin.subtitle = self.pinSubTiiles[index]
             // 画像をセットできる
-            pin.pinImage = pinImagges[index]
+//            pin.pinImage = pinImagges[index]
             
             
             
@@ -76,89 +68,61 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
         
     }
     
-    // 画面に適当にボタンを配置する
-    @IBAction func tap(_ sender: Any) {
-        //        geoCording()
-    }
     
-    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        // タップされたピンの位置情報
-        //        print(view.annotation?.coordinate)
-        //        // タップされたピンのタイトルとサブタイトル
-        //        print(view.annotation?.title)
-        //        print(view.annotation?.subtitle)
-        // 自分の現在地は置き換えない(青いフワフワのマークのままにする)
-        if (annotation is MKUserLocation) {
-            return nil
-        }
-        
-        let identifier = "pin"
-        var annotationView: MKAnnotationView!
-        
-        if annotationView == nil {
-            annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-        }
-        
-        // ピンにセットした画像をつける
-        if let pin = annotation as? MapAnnotationSetting {
-            if let pinImage = pin.pinImage {
-                let resizeImage = pinImage.resized(toWidth: 20)
-                annotationView.image = resizeImage
-                
+    
+        // ジオコーディング(住所から緯度・経度)
+        func geoCording() {
+            // 検索で入力した値を代入(今回は固定で東京駅)
+            let address = "東京都千代田区丸の内１丁目"
+            var resultlat: CLLocationDegrees!
+            var resultlng: CLLocationDegrees!
+            // 住所から位置情報に変換
+            print("来てる？")
+            print(addressArray.count)
+            for (index,address) in self.addressArray.enumerated() {
+                print(index,address)
+                CLGeocoder().geocodeAddressString(address) { placemarks, error in
+                    if let lat = placemarks?.first?.location?.coordinate.latitude {
+                        // 問題なく変換できたら代入
+                        print("緯度 : \(lat)")
+                        resultlat = lat
+    
+                    }
+                    if let lng = placemarks?.first?.location?.coordinate.longitude {
+                        // 問題なく変換できたら代入
+                        print("経度 : \(lng)")
+                        resultlng = lng
+                    }
+                    // 値が入ってれば
+                    if (resultlng != nil && resultlat != nil) {
+                        //                　　　　　　　　位置情報データを作成
+                        let cordinate = CLLocationCoordinate2DMake(resultlat, resultlng)
+                        
+                        DispatchQueue.main.async {
+                            self.addPin(coordinate: cordinate)
+                        }
+                    }
+                }
             }
         }
-        annotationView.annotation = annotation
-        // ピンをタップした時の吹き出しの表示
-        annotationView.canShowCallout = true
+    
+    func addPin(coordinate: CLLocationCoordinate2D) {
         
-        return annotationView
+        let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         
+//                        let region = MKCoordinateRegion(center: coordinate, span: span)
+//                        self.mapView.region = region
+        
+        // 同時に取得した位置にピンを立てる
+        let pin2 = MKPointAnnotation()
+        pin2.title = "タイトル"
+        pin2.subtitle = "サブタイトル"
+        
+        
+        pin2.coordinate = coordinate
+        self.mapView.addAnnotation(pin2)
     }
     
-    
-    //    // ジオコーディング(住所から緯度・経度)
-    //    func geoCording() {
-    //        // 検索で入力した値を代入(今回は固定で東京駅)
-    //        let address = "東京都千代田区丸の内１丁目"
-    //        var resultlat: CLLocationDegrees!
-    //        var resultlng: CLLocationDegrees!
-    //        // 住所から位置情報に変換
-    //        print("来てる？")
-    //        print(addressArray.count)
-    //        for (index,address) in self.addressArray.enumerated() {
-    //            print(index,address)
-    //            CLGeocoder().geocodeAddressString(address) { placemarks, error in
-    //                if let lat = placemarks?.first?.location?.coordinate.latitude {
-    //                    // 問題なく変換できたら代入
-    //                    print("緯度 : \(lat)")
-    //                    resultlat = lat
-    //
-    //                }
-    //                if let lng = placemarks?.first?.location?.coordinate.longitude {
-    //                    // 問題なく変換できたら代入
-    //                    print("経度 : \(lng)")
-    //                    resultlng = lng
-    //                }
-    //                // 値が入ってれば
-    //                if (resultlng != nil && resultlat != nil) {
-    //                    //  　　　　　　　　　  位置情報データを作成
-    //                    let cordinate = CLLocationCoordinate2DMake(resultlat, resultlng)
-    //                    let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-    //                    //  　　　　　　　　　  照準を合わせる
-    //                    let region = MKCoordinateRegion(center: cordinate, span: span)
-    //                    self.mapView.region = region
-    //
-    //                    // 同時に取得した位置にピンを立てる
-    //                    let pin = MKPointAnnotation()
-    //                    pin.title = "title"
-    //                    pin.subtitle = "sub"
-    //
-    //                    pin.coordinate = cordinate
-    //                    self.mapView.addAnnotation(pin)
-    //                }
-    //            }
-    //        }
-    //    }
     
     func locationManager(_ manager: CLLocationManager,didChangeAuthorization status: CLAuthorizationStatus) {
         switch status {
@@ -220,7 +184,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
                     //print(data)
                     //print("\(resultArray)これ")
                     
-                    //                    geoCording()
+                                        geoCording()
                 }
             }
         }
@@ -234,45 +198,37 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
     
     
     // ジオコーディング(住所から緯度・経度)
-    func geoCording() {
-        // 検索で入力した値を代入(今回は固定で東京駅)
-        let address = "東京都千代田区丸の内１丁目"
-        var resultlat: CLLocationDegrees!
-        var resultlng: CLLocationDegrees!
-        // 住所から位置情報に変換
-        CLGeocoder().geocodeAddressString(address) { placemarks, error in
-            if let lat = placemarks?.first?.location?.coordinate.latitude {
-                // 問題なく変換できたら代入
-                print("緯度 : \(lat)")
-                resultlat = lat
-                
-            }
-            if let lng = placemarks?.first?.location?.coordinate.longitude {
-                // 問題なく変換できたら代入
-                print("経度 : \(lng)")
-                resultlng = lng
-            }
-            // 値が入ってれば
-            if (resultlng != nil && resultlat != nil) {
-                //                　　　　　　　　位置情報データを作成
-                let cordinate = CLLocationCoordinate2DMake(resultlat, resultlng)
-                let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                
-                                let region = MKCoordinateRegion(center: cordinate, span: span)
-                                self.mapView.region = region
-                
-                // 同時に取得した位置にピンを立てる
-                let pin2 = MKPointAnnotation()
-                pin2.title = "タイトル"
-                pin2.subtitle = "サブタイトル"
-                
-                pin2.coordinate = cordinate
-                self.mapView.addAnnotation(pin2)
-            }
-        }
-    }
+//    func geoCording() {
+//        // 検索で入力した値を代入(今回は固定で東京駅)
+//        let address = "東京都千代田区丸の内１丁目"
+//        var resultlat: CLLocationDegrees!
+//        var resultlng: CLLocationDegrees!
+//        // 住所から位置情報に変換
+//        CLGeocoder().geocodeAddressString(address) { placemarks, error in
+//            if let lat = placemarks?.first?.location?.coordinate.latitude {
+//                // 問題なく変換できたら代入
+//                print("緯度 : \(lat)")
+//                resultlat = lat
+//                
+//            }
+//            if let lng = placemarks?.first?.location?.coordinate.longitude {
+//                // 問題なく変換できたら代入
+//                print("経度 : \(lng)")
+//                resultlng = lng
+//            }
+//            // 値が入ってれば
+//            if (resultlng != nil && resultlat != nil) {
+//                //                　　　　　　　　位置情報データを作成
+//                let cordinate = CLLocationCoordinate2DMake(resultlat, resultlng)
+//                
+//                DispatchQueue.main.async {
+//                    self.addPin(coordinate: cordinate)
+//                }
+//            }
+//        }
+//    }
     
-    
+
 }
 
 extension UIImage {
