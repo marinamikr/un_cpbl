@@ -99,7 +99,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
                     let cordinate = CLLocationCoordinate2DMake(resultlat, resultlng)
                     
                     DispatchQueue.main.async {
-                        self.addPin(coordinate: cordinate)
+                        
+                        //わかんない
+//                        for (index,title) in self.nameArray.enumerated() {
+//                            self.addPin(coordinate: cordinate)
+                            let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                            
+                            //                        let region = MKCoordinateRegion(center: coordinate, span: span)
+                            //                        self.mapView.region = region
+                            
+                            // 同時に取得した位置にピンを立てる
+                            let pin2 = MKPointAnnotation()
+                                
+                                pin2.title = self.nameArray[index]
+                                pin2.subtitle = self.cellArray[index]
+                                pin2.coordinate = cordinate
+                                self.mapView.addAnnotation(pin2)
+//                            }
                     }
                 }
             }
@@ -231,39 +247,50 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
     //    }
     
     //アノテーションビューを返すメソッド
-     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-         // MapViewのdelegateメソッド、viewFor annotationを定義している場合、
-         // 地図上に青点のannotationを表示する処理がオーバライドされてしまう。
-         // 青点のannotation(現在地表示しているピン)のみ、処理しないという記述を行うことで正しい動きになる。
-         if annotation.title == "My Location"{
-             return nil
-         }
-
-         //アノテーションビューの作成
-         let pinView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
-    
-         //吹き出しを表示可能にする
-         pinView.canShowCallout = true
-    
-         // 例で削除ボタンの作成
-         let button = UIButton()
-         button.frame = CGRect(x:0,y:0,width:40,height:40)
-         button.setImage(UIImage(systemName: "trash"), for: .normal)
-         button.tintColor = UIColor.red
-
-         //右側に削除ボタンを追加
-         pinView.rightCalloutAccessoryView = button
-             
-         return pinView
-     }
+//     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+//         // MapViewのdelegateメソッド、viewFor annotationを定義している場合、
+//         // 地図上に青点のannotationを表示する処理がオーバライドされてしまう。
+//         // 青点のannotation(現在地表示しているピン)のみ、処理しないという記述を行うことで正しい動きになる。
+//         if annotation.title == "My Location"{
+//             return nil
+//         }
+//
+//         //アノテーションビューの作成
+//         let pinView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: nil)
+//    
+//         //吹き出しを表示可能にする
+//         pinView.canShowCallout = true
+//    
+//         // 例で削除ボタンの作成
+//         let button = UIButton()
+//         button.frame = CGRect(x:0,y:0,width:40,height:40)
+//         button.setImage(UIImage(systemName: "trash"), for: .normal)
+//         button.tintColor = UIColor.red
+//
+//         //右側に削除ボタンを追加
+//         pinView.rightCalloutAccessoryView = button
+//             
+//         return pinView
+//     }
     
     //吹き出しアクササリー押下時の呼び出しメソッド
-       func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-           guard let annotation = view.annotation else {
-               return
+//       func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+//           guard let annotation = view.annotation else {
+//               return
+//           }
+//           //以下押された際の動き
+//           print("ssss\(nameArray)")
+//       }
+    
+    
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+           if let annotation = view.annotation{
+//               print(pin2.title)
+                          print("ssss\(nameArray)")
+//               if let firstIndex = nameArray.index(of: title!) {
+//                   print("aaa\(firstIndex)") // 2
+//               }
            }
-           //以下押された際の動き
-           print("ssss\(nameArray)")
        }
 }
 
