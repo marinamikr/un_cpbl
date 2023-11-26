@@ -19,6 +19,7 @@
 		9C46EA3C2B09A8CA0036014C /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 9C46EA3B2B09A8CA0036014C /* FirebaseFirestore */; };
 		9C46EA3E2B09A8D60036014C /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9C46EA3D2B09A8D60036014C /* FirebaseAuth */; };
 		9C46EA402B09AB740036014C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9C46EA3F2B09AB740036014C /* GoogleService-Info.plist */; };
+		9C4CF1DD2B12DD200016C7CE /* SubViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C4CF1DC2B12DD200016C7CE /* SubViewController.swift */; };
 		9C6968E12B10B94A00ECACCF /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C6968E02B10B94A00ECACCF /* Data.swift */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +55,7 @@
 		9C120EAE2B077B10002D13B2 /* uni_cpblUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = uni_cpblUITests.swift; sourceTree = "<group>"; };
 		9C120EB02B077B10002D13B2 /* uni_cpblUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = uni_cpblUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		9C46EA3F2B09AB740036014C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9C4CF1DC2B12DD200016C7CE /* SubViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubViewController.swift; sourceTree = "<group>"; };
 		9C6968E02B10B94A00ECACCF /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -117,6 +119,7 @@
 				9C120E982B077B10002D13B2 /* LaunchScreen.storyboard */,
 				9C120E9B2B077B10002D13B2 /* Info.plist */,
 				9C46EA3F2B09AB740036014C /* GoogleService-Info.plist */,
+				9C4CF1DC2B12DD200016C7CE /* SubViewController.swift */,
 			);
 			path = uni_cpbl;
 			sourceTree = "<group>";
@@ -286,6 +289,7 @@
 			files = (
 				9C120E922B077B0F002D13B2 /* ViewController.swift in Sources */,
 				9C120E8E2B077B0F002D13B2 /* AppDelegate.swift in Sources */,
+				9C4CF1DD2B12DD200016C7CE /* SubViewController.swift in Sources */,
 				9C120E902B077B0F002D13B2 /* SceneDelegate.swift in Sources */,
 				9C6968E12B10B94A00ECACCF /* Data.swift in Sources */,
 			);

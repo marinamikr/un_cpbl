@@ -284,14 +284,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate,MKMapViewDeleg
     
     
     func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
-           if let annotation = view.annotation{
-//               print(pin2.title)
-                          print("ssss\(nameArray)")
-//               if let firstIndex = nameArray.index(of: title!) {
-//                   print("aaa\(firstIndex)") // 2
-//               }
-           }
+        if let annotation = view.annotation{
+            let selectedIndex = nameArray.firstIndex(where: { $0 == annotation.title })
+            performSegue(withIdentifier: "toSub", sender: selectedIndex)
+            
+        }
        }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let destination = segue.destination as? SubViewController,
+              let selectedIndex = sender as? Int else { return }
+        
+        destination.storeName = nameArray[selectedIndex]
+        
+        
+    }
+  
 }
 
 extension UIImage {
